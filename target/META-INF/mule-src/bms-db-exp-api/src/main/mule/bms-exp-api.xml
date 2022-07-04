@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="bms-exp-api-config" api="resource::ddbd4ad5-6f2a-4406-8403-dd1be00842b9:bms-exp-api:1.0.5:raml:zip:bms-exp-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="bms-exp-api-main">
+        <http:listener config-ref="bms-exp-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="bms-exp-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="bms-exp-api-console">
+        <http:listener config-ref="bms-exp-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="bms-exp-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="put:\organizer\(organizer-id)\show\(show-id):application\json:bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="organizer-id">attributes.uriParams.'organizer-id'</ee:set-variable>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="30c5a7da-f6ca-4f1b-a9f8-584b39d72d23" name="putShow" />
+    </flow>
+    <flow name="delete:\organizer\(organizer-id)\show\(show-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="organizer-id">attributes.uriParams.'organizer-id'</ee:set-variable>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="9a7ae867-f670-4a86-ba3e-e7e3b7d217bb" name="deleteShowById" />
+    </flow>
+    <flow name="get:\user\show\(show-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="69f0fcda-36f9-41a2-b23c-78e97577c407" name="getShowByIdFlow" />
+    </flow>
+    <flow name="get:\sold-tickets\(show-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="2f28ead5-e754-4258-a390-8964c5163024" name="getTicketSoldById" />
+    </flow>
+    <flow name="get:\user:bms-exp-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="0637f70f-6e31-4c3a-a1bf-f6dda959672f" name="getUserFlow" />
+    </flow>
+    <flow name="get:\organizer\(organizer-id)\show:bms-exp-api-config">
+        <ee:transform doc:name="Transform Message" doc:id="fee8c7fc-eb03-4f7d-ae44-f162b82b2742" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="organizer-id" ><![CDATA[attributes.uriParams.'organizer-id']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="aeef8210-6f9e-4c48-b11c-720e891d5a26" name="getOrganizerShowById" />
+    </flow>
+    <flow name="get:\organizer\(organizer-id)\show\(show-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="organizer-id">attributes.uriParams.'organizer-id'</ee:set-variable>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="a9ce1eb0-5f52-4690-9081-1b6f0e3e09df" name="getShowsByShowId" />
+    </flow>
+    <flow name="post:\organizer:application\json:bms-exp-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="d9d80b73-24ca-47e0-93b1-88a01e2e72ac" name="postOrganizer" />
+    </flow>
+    <flow name="post:\user:application\json:bms-exp-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="b38e71d5-b657-422b-9430-6b6b91321e47" name="postUserFlow" />
+    </flow>
+    <flow name="post:\organizer\(organizer-id)\show:application\json:bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="organizer-id">attributes.uriParams.'organizer-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="9b94dc7b-72ff-4caf-bbf8-b7bbf3fe9073" name="postOrganizerShow" />
+    </flow>
+    <flow name="post:\user\(user-id)\Booking:application\json:bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="user-id">attributes.uriParams.'user-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="3182a5aa-f25f-465b-87aa-0dcb38ec5ecb" name="postTicketFlow" />
+    </flow>
+    <flow name="get:\user\(user-id)\recommendation:bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="user-id">attributes.uriParams.'user-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="5ec07774-e35a-491f-9bf6-9418972745f0" name="getRecommendationFlow" />
+    </flow>
+    <flow name="get:\user\(user-id)\Booking\(Booking-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="user-id">attributes.uriParams.'user-id'</ee:set-variable>
+                <ee:set-variable variableName="Booking-id">attributes.uriParams.'Booking-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="30e0df07-352f-4006-bb7f-a3266172208f" name="getBookedShowByIdFlow" />
+    </flow>
+    <flow name="put:\admin\organizer\(organizer-id):application\json:bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="organizer-id">attributes.uriParams.'organizer-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="69186280-afad-4c03-b2a0-ea264aa06cf7" name="adminPutSpecificOrganizer"/>
+    </flow>
+    <flow name="put:\admin\show\(show-id):application\json:bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="69db7f3a-a9f5-4a9a-9e6d-e1142381b677" name="adminPutSpecificShow"/>
+    </flow>
+    <flow name="put:\admin\user\(user-id):application\json:bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="user-id">attributes.uriParams.'user-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="1f9dd7cd-9f67-4f45-9d5a-1e44a40e97cc" name="adminPutSpecificUser"/>
+    </flow>
+    <flow name="delete:\admin\organizer\(organizer-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="organizer-id">attributes.uriParams.'organizer-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="22409dea-12da-4cd5-9b57-72cc40b2ec69" name="adminDeleteSpecificOrganizer"/>
+    </flow>
+    <flow name="delete:\admin\show\(show-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="14e7791b-fbfa-4fb1-9757-4804ddcd4fda" name="adminDeleteSpecificShow"/>
+    </flow>
+    <flow name="delete:\admin\user\(user-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="user-id">attributes.uriParams.'user-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="c31a50c0-4fbc-4a1b-ab83-37c415664df8" name="adminDeleteSpecificUser"/>
+    </flow>
+    <flow name="get:\admin\organizer:bms-exp-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="abb34d42-7644-43c4-8a84-57305c0e4570" name="adminGetOrganizer"/>
+    </flow>
+    <flow name="get:\admin\report:bms-exp-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="b34ff1f3-5cbb-4635-94b4-f42fa128caa4" name="adminGetReport"/>
+    </flow>
+    <flow name="get:\admin\show:bms-exp-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="f52df859-eddc-43ae-a7a8-ac93a3806434" name="adminGetShow"/>
+    </flow>
+    <flow name="get:\admin\user:bms-exp-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="99988a8b-b58d-4d98-9133-215e6aa88000" name="adminGetUser"/>
+    </flow>
+    <flow name="get:\admin\organizer\(organizer-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="organizer-id">attributes.uriParams.'organizer-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="0e499ef3-ee8d-4493-9182-52775411636e" name="adminGetSpecificOrganizer"/>
+    </flow>
+    <flow name="get:\admin\show\(show-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="show-id">attributes.uriParams.'show-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="8f39ead2-cf59-4076-a77e-12c108f65560" name="adminGetSpecificShow"/>
+    </flow>
+    <flow name="get:\admin\user\(user-id):bms-exp-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="user-id">attributes.uriParams.'user-id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="5cc8f4ea-0ad9-414c-a95b-2fbb50734859" name="adminGetSpecificUser"/>
+    </flow>
+    <flow name="post:\admin\advertise\send-organizers-phone:application\json:bms-exp-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="d06a5185-af2b-40bd-8481-5c94eb66d479" name="adminPostAdvertiseForOrganizers"/>
+    </flow>
+    <flow name="post:\admin\advertise\send-users-phone:application\json:bms-exp-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="7f5d73ee-0239-4ec6-95f7-c88981684207" name="adminPostAdvertiseForUsers"/>
+    </flow>
+</mule>

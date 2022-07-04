@@ -1,0 +1,22 @@
+%dw 2.0
+
+type auto_c91557e6_4943_49a7_afcf_13d9693788c3_Input_Payload = {|
+  showId: Number, 
+  showName: String, 
+  showDate: String, 
+  showStartTime: String, 
+  showEndTime: String, 
+  price: Number, 
+  seats: Number, 
+  genre: String, 
+  coupon: Array<{|    couponId: Number,     showId: Number,     topUsers: Number,     discountPercentage: Number  |}>, 
+  activeDate: String, 
+  addressLine1: String, 
+  addressLine2: String, 
+  city: String, 
+  state: String, 
+  country: String, 
+  pincode: Number, 
+  orgId: Number
+|}
+

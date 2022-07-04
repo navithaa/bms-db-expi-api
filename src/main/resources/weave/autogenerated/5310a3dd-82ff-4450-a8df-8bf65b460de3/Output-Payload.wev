@@ -1,0 +1,11 @@
+%dw 2.0
+
+type auto_5310a3dd_82ff_4450_a8df_8bf65b460de3_Output_Payload = {
+  orgName: String, 
+  address: String, 
+  orgId?: Number, 
+  email: String, 
+  phoneNo: String, 
+  _?: Any
+}
+

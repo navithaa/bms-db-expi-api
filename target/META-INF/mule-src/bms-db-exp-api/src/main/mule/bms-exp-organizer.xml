@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="219b5c6f-1172-46dc-9d49-3b39bd163ea8" tracking:enable-default-events="false" basePath="/api">
+		<http:request-connection host="bms-org-pro-api.us-e2.cloudhub.io" port="80" />
+	</http:request-config>
+	<flow name="postOrganizer" doc:id="219b5c6f-1172-46dc-9d49-3b39bd163ea8" >
+		<logger level="INFO" doc:name="INFO: Entered Post Organizer Flow" doc:id="a654eb2a-005c-4111-b730-086bb006e602" message="Entered Post Organizer"/>
+		<http:request method="POST" doc:name="post Organizer" doc:id="2c47dd67-8e79-48b9-8976-e04cab8d24ea" config-ref="HTTP_Request_configuration" path="/organizer">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="e7a720e3-3bbb-46b3-af64-224f39fa0dbc">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Organizer registered successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Post Organizer Successfully" doc:id="1f03e9a2-e90c-4cf5-b72f-538dc929cca4" message="Executed Post Organizer Successfully"/>
+	</flow>
+	<flow doc:id="cfec10e7-07d9-4f98-960d-c1f12040a00b" name="getOrganizerShowById">
+		<logger level="INFO" doc:name="INFO: Entered Get Organizer Show Flow" doc:id="d25a6392-8041-40ce-b039-c16bbcd0813e" message=" Entered Get Organizer Show"/>
+		<http:request method="GET" doc:name="get Organizer Show" doc:id="b455fd91-e8d7-438d-8ee6-791530933f64" config-ref="HTTP_Request_configuration" path="/organizer/{organizer-id}/show">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+"organizer-id": attributes.uriParams.'organizer-id'
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="74bbda5d-5993-4469-bcbb-948f54f5769c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Get Organizer Show Successfully" doc:id="f0a3dd9e-3f6e-419f-bf49-7ff5c886a760" message="Executed Get Organizer Show Successfully"/>
+	</flow>
+	<flow name="postOrganizerShow" doc:id="a52ca4c8-7adc-4322-847f-64e14f070c77" >
+		<logger level="INFO" doc:name="INFO: Entered Post Organizer Show Flow" doc:id="1562189e-e85f-485d-babc-c88c3f256abf" message="Entered Post Organizer Show"/>
+		<http:request method="POST" doc:name="post Organizer Show" doc:id="94965a1d-8b2c-49c5-8daf-d6f2283a00e6" config-ref="HTTP_Request_configuration" path="/organizer/{organizer-id}/show">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"organizer-id" : attributes.uriParams."organizer-id"
+	
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="486103bd-69b5-415a-aef7-0aef0b90e4d4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"added show successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Post Organizer Show Successfully" doc:id="a0c7f614-44c1-4fa4-8b02-eefd4b023d66" message="Executed Post Organizer Show Successfully"/>
+	</flow>
+	<flow name="getShowsByShowId" doc:id="4953e863-2d5f-4bda-92c6-705fc6ba85bf" >
+		<logger level="INFO" doc:name="INFO: Entered Get Shows By Show Id Flow" doc:id="c427f3c1-f7cb-49c8-b6ee-2bdb6b0219a5" message="Entered Get Shows By Show Id"/>
+		<http:request method="GET" doc:name="get Shows By Id" doc:id="3d819659-4942-4f0f-ad1f-cbd944fef4e6" config-ref="HTTP_Request_configuration" path="/organizer/{organizer-id}/show/{show-id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"organizer-id": attributes.uriParams.'organizer-id',
+	"show-id" : attributes.uriParams.'show-id'
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="201bedc0-edfe-4be1-86d8-f1d1c5278d24" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Get Shows By Show Id Successfully" doc:id="77129eee-8c1b-4f96-9c97-2774c1717ec9" message="Executed Get Shows By Show Id Successfully"/>
+	</flow>
+	<flow name="deleteShowById" doc:id="0b028a14-5355-4ac8-a9be-451804ad8bd5" >
+		<logger level="INFO" doc:name="INFO: Entered Delete Show By Id Flow" doc:id="36592bed-2b4a-4336-bb6f-721e774c07f6" message="Entered Delete Show By Id Flow"/>
+		<http:request method="DELETE" doc:name="delete Show by Id" doc:id="e88ef6b3-2a3c-4bde-b19c-42ad3074e896" config-ref="HTTP_Request_configuration" path="/organizer/{organizer-id}/show/{show-id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"organizer-id": attributes.uriParams.'organizer-id',
+	"show-id" : attributes.uriParams.'show-id'
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="150bb695-03c4-4166-ac8c-b923a9c87373" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"deleted show details successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Delete Show By Id Successfully" doc:id="a968bb85-137b-4d2d-82b9-3336761130b1" message="Executed Delete Show By Id Successfully"/>
+	</flow>
+	<flow name="putShow" doc:id="3638c221-efc4-49fd-8c1d-4cea7515db23" >
+		<logger level="INFO" doc:name="INFO: Entered Put Show Flow" doc:id="6bb861d1-f1b8-43f5-881e-cd263d98bcb5" message="Entered Put Show"/>
+		<http:request method="PUT" doc:name="put Show by Id" doc:id="55ce5849-853d-42d0-bf7f-7dc581436206" config-ref="HTTP_Request_configuration" path="/organizer/{organizer-id}/show/{show-id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"organizer-id": attributes.uriParams.'organizer-id',
+	"show-id" : attributes.uriParams.'show-id'
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="7104a77b-c27f-4dde-9030-68bbaada3465" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"Updated show details successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Put Show Successfully" doc:id="d16e43b4-9d46-4e00-ba27-3493403c9845" message="Executed Put Show Successfully"/>
+	</flow>
+	<flow name="getTicketSoldById" doc:id="b60ef2d1-9063-48c1-8c01-6b990e7cdbb3" >
+		<logger level="INFO" doc:name="INFO: Entered Ticket Sold By Id Flow" doc:id="e4230ca6-0715-4d58-ada9-928141f08474" message="Entered Ticket Sold By Id "/>
+		<http:request method="GET" doc:name="get Sold Tickets" doc:id="a0d5bfff-f44f-4ad3-9ab3-573c5bac58a1" config-ref="HTTP_Request_configuration" path="/sold-tickets/{show-id}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+
+	"show-id" : attributes.uriParams.'show-id'
+	
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="6a1e71cc-7839-4ec7-b782-ac9c6e5db47a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Ticket Sold By Id Successfully" doc:id="b60de2ad-1480-49bc-ba4e-a3970379a043" message="Executed Ticket Sold By Id Successfully"/>
+	</flow>
+</mule>

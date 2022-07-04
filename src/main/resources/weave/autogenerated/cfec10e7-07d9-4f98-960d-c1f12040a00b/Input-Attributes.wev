@@ -1,0 +1,29 @@
+%dw 2.0
+
+type auto_cfec10e7_07d9_4f98_960d_c1f12040a00b_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|
+    pageSize?: Number, 
+    page?: Number, 
+    name?: String, 
+    status?: "active" | "nonActive", 
+    genre?: Array<String>
+  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| "organizer-id": String |}, 
+  version: String, 
+  localAddress: String
+|}
+

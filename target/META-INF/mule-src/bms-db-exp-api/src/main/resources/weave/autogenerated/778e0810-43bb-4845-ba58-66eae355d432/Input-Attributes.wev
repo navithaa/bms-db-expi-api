@@ -1,0 +1,29 @@
+%dw 2.0
+
+type auto_778e0810_43bb_4845_ba58_66eae355d432_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|
+    pageSize?: Number, 
+    page?: Number, 
+    name?: String, 
+    status?: "active" | "nonActive", 
+    genre?: Array<String>
+  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+

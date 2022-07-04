@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="bb1ac77c-ed94-4abe-a696-19215e253da0" basePath="/api">
+		<http:request-connection host="bms-user-process-api.us-e2.cloudhub.io" port="80" />
+	</http:request-config>
+	<sub-flow name="postUserFlow" doc:id="1b6fe53e-e75f-4c6f-b884-cfba229c578b" >
+		<logger level="INFO" doc:name="INFO: Entered Post User Flow" doc:id="e20ffaa4-400e-4e23-a00a-39f6dfbfd8dd" message="Entered Post Organizer Flow"/>
+		<http:request method="POST" doc:name="post User" doc:id="7f1f894a-52a1-49bc-9b52-a7aadbf96953" config-ref="HTTP_Request_configuration1" path="/user">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="62a27b8b-261b-4e7d-8185-4d7daa103663" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "User registered successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Post Organizer Successfully" doc:id="2a3c0dfb-26c8-4c07-a43e-5e3b208c1d30" message="Executed Post Organizer Successfully"/>
+	</sub-flow>
+	<sub-flow name="getUserFlow" doc:id="4885bacf-da46-440a-a254-e1ac77e0153e" >
+		<logger level="INFO" doc:name="INFO: Entered Get Organizer Flow" doc:id="4b57261f-663b-4d2f-9082-7a5026f09c9c" message="Entered Get Organizer"/>
+		<http:request method="GET" doc:name="get User" doc:id="7680f66d-f5ca-469f-9d1f-dbac6e7b06a6" config-ref="HTTP_Request_configuration1" path="/user">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="61475ea1-8454-40ac-904a-324a528a8621" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Get User Successfully" doc:id="98bb01a5-fb54-4aaf-a0d9-a69c19ac8a7a" message="Executed Get User Successfully"/>
+	</sub-flow>
+	<sub-flow name="getShowByIdFlow" doc:id="8a49c2a3-4b29-4f3e-afbe-95a1b0d20666" >
+		<logger level="INFO" doc:name="INFO: Entered Get Show By Id  Flow" doc:id="6eefb545-cdd6-4c03-b569-b42d9fba0618" message="Entered Get Show By Id" />
+		<http:request method="GET" doc:name="get Show By Id" doc:id="06c34551-ad88-4e04-aa2a-59c9249b2010" config-ref="HTTP_Request_configuration1" path="/user/show/{show-id}" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"show-id" :attributes.uriParams.'show-id'
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="c4767b99-c2c8-4305-b07a-a5f92d24bcc5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Get Show By Id Successfully" doc:id="760f7fe7-4fc1-4a3b-abad-21fd86ac20da" message="Executed Get  Show By Id Successfully" />
+	</sub-flow>
+	<sub-flow name="postTicketFlow" doc:id="f5654dd6-f0a1-41ef-b78d-18d4cb3c96b7" >
+		<logger level="INFO" doc:name="INFO: Entered Post Ticket  Flow" doc:id="57e2dd1b-fd26-41ca-8518-590cd63f8d00" message="Entered Post Ticket " />
+		<http:request method="POST" doc:name="post Ticket" doc:id="5b4dbd58-53dd-49d6-9eea-674ed12e0978" config-ref="HTTP_Request_configuration1" path="/user/{user-id}/Booking">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[{
+	"user-id" : attributes.uriParams.'user-id'
+	
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="f2523b5f-3942-4468-b454-ccffd60b6803" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:  "Booking Successfull!!!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Post Ticket Successfully" doc:id="2606d559-d9cc-4951-ba1c-ee2d16bec656" message="Executed Post Ticket Successfully" />
+	</sub-flow>
+	<sub-flow name="getBookedShowByIdFlow" doc:id="aa29c30e-f058-42ac-8b21-0a9c29f37286" >
+		<logger level="INFO" doc:name="INFO: Entered Get Booked Show By Id Flow" doc:id="1bb537a2-845b-441c-a6cd-f69f748b67dc" message="Entered Get Booked Show By Id" />
+		<http:request method="GET" doc:name="get Booked Show By Id" doc:id="48f927e7-56c5-4b21-b493-1cda7ced0fa8" config-ref="HTTP_Request_configuration1" path="/user/{user-id}/Booking/{Booking-id}" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"user-id" : attributes.uriParams.'user-id',
+	"Booking-id" : attributes.uriParams.'Booking-id'
+	
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="e4a51e2f-7c64-45ca-bb13-cc24d67fc256" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Get Booked Show By Id Successfully" doc:id="9978bde6-aabe-4cc6-8faa-73c907e482e2" message="Executed Get Booked Show By Id Successfully" />
+	</sub-flow>
+	<sub-flow name="getRecommendationFlow" doc:id="635bb304-cfaa-4db6-9b25-8c116090ec40" >
+		<logger level="INFO" doc:name="INFO: Entered Get Recommendation Flow" doc:id="78866582-944d-48ee-b3a8-8f4a1037ea94" message="Entered Get Recommendation  " />
+		<http:request method="GET" doc:name="get Recommendation " doc:id="eee5c2e2-1feb-4d2f-a2a4-5036585fd4aa" config-ref="HTTP_Request_configuration1" path="/user/{user-id}/recommendation" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : p('secure::client_secret'),
+	"client_id" : p('secure::client_id')
+	
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"user-id" : attributes.uriParams.'user-id'
+	
+	
+}]]]></http:uri-params>
+			<http:query-params ><![CDATA[#[output application/java
+---
+attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="01d2f565-a506-4fea-b6ae-08170c418081" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="INFO: Executed Get Recommendation Successfully" doc:id="59b064d8-5a9f-4060-8ac6-8e90e6eb58d2" message="Executed Get Recommendation Successfully" />
+	</sub-flow>
+</mule>

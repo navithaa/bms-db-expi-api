@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ddbd4ad5-6f2a-4406-8403-dd1be00842b9</groupId>
+  <artifactId>bms-exp-api</artifactId>
+  <version>1.0.5</version>
+  <name>bms-exp-api</name>
+  <properties>
+    <classifier>raml</classifier>
+    <main>bms-exp-api.raml</main>
+    <status>published</status>
+    <originalFormatVersion>1.0</originalFormatVersion>
+    <apiVersion>v1</apiVersion>
+    <projectId>5bd5c2cf-cf3e-462f-9320-856c0ff559cf</projectId>
+    <branchId>master</branchId>
+    <commitId>965cf56396bd23c47faa0a50b8ff1236a8a08600</commitId>
+    <keywords/>
+    <type>rest-api</type>
+    <mainFile>bms-exp-api.raml</mainFile>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>ddbd4ad5-6f2a-4406-8403-dd1be00842b9</groupId>
+      <version>1.0.19</version>
+      <type>zip</type>
+      <classifier>raml-fragment</classifier>
+      <artifactId>common-resources</artifactId>
+    </dependency>
+  </dependencies>
+  <repositories>
+    <repository>
+      <id>anypoint-exchange</id>
+      <url>https://maven.anypoint.mulesoft.com/api/v3/maven</url>
+    </repository>
+  </repositories>
+</project>

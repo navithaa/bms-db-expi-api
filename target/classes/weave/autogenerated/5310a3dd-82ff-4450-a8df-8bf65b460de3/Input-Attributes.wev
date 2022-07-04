@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_5310a3dd_82ff_4450_a8df_8bf65b460de3_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| "organizer-id": String |}, 
+  version: String, 
+  localAddress: String
+|}
+
